@@ -14,8 +14,15 @@ import (
 )
 
 var (
-	flagEhConnString  string
-	flagBrokerVersion string
+	flagEhConnString            string
+	flagBrokerVersion           string
+	flagAuthenticationMechanism string // PLAIN, OAUTHBEARER, SCRAM-SHA-512, TLS
+	flagUsername                string
+	flagPassword                string
+	flagToken                   string
+	flagClientCertificate       string
+	flagClientKey               string
+	flagServerCA                string
 )
 
 func init() {
@@ -32,6 +39,14 @@ func init() {
 	configLsCmd.Flags().BoolVar(&noHeaderFlag, "no-headers", false, "Hide table headers")
 	configAddEventhub.Flags().StringVar(&flagEhConnString, "eh-connstring", "", "EventHub ConnectionString")
 	configAddClusterCmd.Flags().StringVar(&flagBrokerVersion, "broker-version", "", fmt.Sprintf("Broker Version. Available Versions: %v", sarama.SupportedVersions))
+	configAddClusterCmd.Flags().StringVar(&flagAuthenticationMechanism, "authentication", "", fmt.Sprintf("Authentication mechanism. [plain|oauthbearer|scram|tls]"))
+	configAddClusterCmd.Flags().StringVar(&flagUsername, "username", "", "Username for SASL authentication")
+	configAddClusterCmd.Flags().StringVar(&flagPassword, "password", "", "Password for SASL authentication")
+	configAddClusterCmd.Flags().StringVar(&flagToken, "token", "", "Token for SASL authentication")
+	configAddClusterCmd.Flags().StringVar(&flagClientCertificate, "clientCertificate", "", "Client certificate for mTLS authentication")
+	configAddClusterCmd.Flags().StringVar(&flagClientKey, "clientKey", "", "Client key for mTLS authentication")
+	configAddClusterCmd.Flags().StringVar(&flagServerCA, "serverCA", "", "Server CA for encryption")
+
 }
 
 var configCmd = &cobra.Command{
@@ -174,6 +189,9 @@ var configAddClusterCmd = &cobra.Command{
 			Brokers:           brokersFlag,
 			SchemaRegistryURL: schemaRegistryURL,
 			Version:           flagBrokerVersion,
+			//SecurityProtocol:  securityProtocol,
+			//SASL              *SASL    `yaml:"SASL"`
+			//TLS               *TLS     `yaml:"TLS"`
 		})
 		err := cfg.Write()
 		if err != nil {
